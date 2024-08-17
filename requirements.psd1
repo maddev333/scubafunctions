@@ -8,4 +8,5 @@
     'ScubaGear' = '1.3.0'
     'Microsoft.Graph.Beta.Identity.DirectoryManagement' = '2.*'
     'Microsoft.Graph.Beta.Users' = '2.*'
+    'Microsoft.Graph.Beta.Identity.SignIns' = '2.*'
 }

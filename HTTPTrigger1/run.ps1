@@ -44,9 +44,20 @@ function Get-AADTenantDetail {
     try {
         # Connect using Managed Identity
 
+        $AllPolicies = Get-MgBetaIdentityConditionalAccessPolicy
+        $SubscribedSku = Get-MgBetaSubscribedSku
+        $UserCount = Get-MgBetaUserCount -ConsistencyLevel eventual
+        $AuthZPolicies = Get-MgBetaPolicyAuthorizationPolicy
 
+        # 5.3, 5.4
+        $DirectorySettings = Get-MgBetaDirectorySetting
+
+        ##### This block of code below supports 3.3, 3.4, 3.5
+        $AuthenticationMethodPolicyRootObject = Get-MgBetaPolicyAuthenticationMethodPolicy
         # Fetch organization information using Microsoft Graph API
-        $OrgInfo = Get-MgBetaOrganization -ErrorAction Stop
+        $OrgInfo = Get-MgBetaOrganization
+
+        $DomainSettings = Get-MgBetaDomain
 
         # Retrieve the initial domain
         $InitialDomain = $OrgInfo.VerifiedDomains | Where-Object { $_.isInitial }
@@ -60,6 +71,14 @@ function Get-AADTenantDetail {
             "DomainName" = $InitialDomain.Name
             "TenantId" = $OrgInfo.Id
             "AADAdditionalData" = $OrgInfo
+            "Policies" = $AllPolicies
+            "Sku" = $SubscribedSku
+            "UserCount" = $UserCount
+            "AuthZPolicies" = $AuthZPolicies
+            "DirectorySettings" = $DirectorySettings
+            "AuthenticationMethod" = $AuthenticationMethodPolicyRootObject
+            "Domain_settings" = $DomainSettings
+
         }
 
         # Convert to JSON format
@@ -257,6 +276,7 @@ function Get-PrivilegedUser {
     $PrivilegedUsers = ConvertTo-Json @($PrivilegedUsers) -Depth 4
     return $PrivilegedUsers
 }
+
 Write-Host "Connect AzAccount! TIME: $currentUTCtime"
 Connect-AzAccount -Identity
 Write-Host "Connect MgGraph TIME: $currentUTCtime"
@@ -272,5 +292,5 @@ Disconnect-AzAccount
 Write-Host "PowerShell timer trigger function ran! TIME: $currentUTCtime"
 Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
     StatusCode = [HttpStatusCode]::OK
-    Body       = $aad + $priv
+    Body       = $aad +","+ $priv
 })
