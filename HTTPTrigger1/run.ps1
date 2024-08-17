@@ -19,10 +19,10 @@ if ($name) {
 }
 
 # Associate values to output bindings by calling 'Push-OutputBinding'.
-Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
-    StatusCode = [HttpStatusCode]::OK
-    Body       = $body
-})
+#Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
+#    StatusCode = [HttpStatusCode]::OK
+#    Body       = $body
+#})
 
 # Input bindings are passed in via param block.
 #param($Timer)
@@ -64,7 +64,7 @@ function Get-AADTenantDetail {
 
         # Convert to JSON format
         $AADTenantInfo = ConvertTo-Json @($AADTenantInfo) -Depth 4
-        $AADTenantInfo
+        return $AADTenantInfo
     }
     catch {
         Write-Warning "Error retrieving Tenant details using Get-AADTenantDetail $($_)"
@@ -77,7 +77,7 @@ function Get-AADTenantDetail {
 
         # Convert to JSON format
         $AADTenantInfo = ConvertTo-Json @($AADTenantInfo) -Depth 4
-        $AADTenantInfo
+        return $AADTenantInfo
     }
 
 }
@@ -255,18 +255,22 @@ function Get-PrivilegedUser {
         }
     }
     $PrivilegedUsers = ConvertTo-Json @($PrivilegedUsers) -Depth 4
-    $PrivilegedUsers
+    return $PrivilegedUsers
 }
 Write-Host "Connect AzAccount! TIME: $currentUTCtime"
 Connect-AzAccount -Identity
 Write-Host "Connect MgGraph TIME: $currentUTCtime"
 Connect-MgGraph -Identity
 Write-Host "Get-AADTenantDetails! TIME: $currentUTCtime"
-Get-AADTenantDetail
+$aad = Get-AADTenantDetail
 Write-Host "Get-PrivilegedUsers! TIME: $currentUTCtime"
-Get-PrivilegedUser
+$priv = Get-PrivilegedUser
 Write-Host "Disonnect-AzAccount! TIME: $currentUTCtime"
 Disconnect-AzAccount
 
 # Write an information log with the current time.
 Write-Host "PowerShell timer trigger function ran! TIME: $currentUTCtime"
+Push-OutputBinding -Name Response -Value ([HttpResponseContext]@{
+    StatusCode = [HttpStatusCode]::OK
+    Body       = $aad + $priv
+})
