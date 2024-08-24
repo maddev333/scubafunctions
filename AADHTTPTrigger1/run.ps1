@@ -276,9 +276,10 @@ function Get-PrivilegedUser {
     $PrivilegedUsers = ConvertTo-Json @($PrivilegedUsers) -Depth 4
     return $PrivilegedUsers
 }
-Write-Output "TenantId: $env:TenantId"
+$envTenantId = $env:TenantId
+Write-Output "TenantId: $envTenantId"
 Write-Host "Connect AzAccount! TIME: $currentUTCtime"
-Connect-AzAccount -Identity -TenantId $env:TenantId -Environment AzureUSGovernment
+Connect-AzAccount -Identity -TenantId $envTenantId -Environment AzureUSGovernment
 Write-Host "Connect MgGraph TIME: $currentUTCtime"
 Connect-MgGraph -Identity -Environment USGov
 Write-Host "Get-AADTenantDetails! TIME: $currentUTCtime"
