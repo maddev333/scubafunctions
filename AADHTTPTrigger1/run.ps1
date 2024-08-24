@@ -278,9 +278,9 @@ function Get-PrivilegedUser {
 }
 
 Write-Host "Connect AzAccount! TIME: $currentUTCtime"
-Connect-AzAccount -Identity
+Connect-AzAccount -Identity -Environment AzureUSGovernment
 Write-Host "Connect MgGraph TIME: $currentUTCtime"
-Connect-MgGraph -Identity
+Connect-MgGraph -Identity -Environment USGov
 Write-Host "Get-AADTenantDetails! TIME: $currentUTCtime"
 $aad = Get-AADTenantDetail
 Write-Host "Get-PrivilegedUsers! TIME: $currentUTCtime"
