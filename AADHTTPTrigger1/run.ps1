@@ -70,7 +70,7 @@ function Get-AADTenantDetail {
             "DisplayName" = $OrgInfo.DisplayName
             "DomainName" = $InitialDomain.Name
             "TenantId" = $OrgInfo.Id
-            "AADAdditionalData" = $OrgInfo
+            #"AADAdditionalData" = $OrgInfo
             "Policies" = $AllPolicies
             "Sku" = $SubscribedSku
             "UserCount" = $UserCount
